@@ -31,11 +31,11 @@ class SleepTrackerViewModel(
         val database: SleepDatabaseDao,
         application: Application) : AndroidViewModel(application) {
 
-        // create a job
-        private val viewModelJob = Job()
-
-        // add scope
-        private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
+//        // create a job
+//        private val viewModelJob = Job()
+//
+//        // add scope
+//        private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
         //
         private var tonight = MutableLiveData<SleepNight?>()
@@ -77,7 +77,7 @@ class SleepTrackerViewModel(
 
 
         private fun initializeTonight() {
-                uiScope.launch {
+                viewModelScope.launch {
                         tonight.value = getTonightFromDatabase()
                 }
         }
@@ -94,7 +94,7 @@ class SleepTrackerViewModel(
 
         fun onStartTracking() {
 
-                uiScope.launch {
+                viewModelScope.launch {
                         val newNight = SleepNight()
                         insert(newNight)
                         tonight.value = getTonightFromDatabase()
@@ -108,7 +108,7 @@ class SleepTrackerViewModel(
         }
 
         fun onStopTracking() {
-                uiScope.launch {
+                viewModelScope.launch {
                         val oldNight = tonight?.value ?: return@launch
                         oldNight.endTimeMilli = System.currentTimeMillis()
                         update(oldNight)
@@ -124,7 +124,7 @@ class SleepTrackerViewModel(
 
         fun onClear() {
                 Log.i("sleepViewmodel", "oncleartracking clicked")
-                uiScope.launch {
+                viewModelScope.launch {
                         clear()
                         tonight.value = null
                         _showSnackbarEvent.value = true
@@ -137,9 +137,9 @@ class SleepTrackerViewModel(
                 }
         }
 
-        override fun onCleared() {
-                super.onCleared()
-                viewModelJob.cancel()
-        }
+//        override fun onCleared() {
+//                super.onCleared()
+//                viewModelJob.cancel()
+//        }
 }
 
